@@ -29,13 +29,10 @@ def try_brotli_init():
         def brotli_decompressor():
             setattr(brotli.Decompressor,'unused_data',property(lambda self: None))
             decomp = brotli.Decompressor()
-            #brotli.Decompressor.unused_data = None
             return decomp
 
         BufferedReader.DECOMPRESSORS['br'] = brotli_decompressor
-        self._br = True
     except ImportError:  #pragma: no cover
-        self._br = False
         pass
 
 
@@ -90,6 +87,7 @@ class BufferedReader(object):
             try:
                 self.decomp_type = decomp_type
                 self.decompressor = self.DECOMPRESSORS[decomp_type.lower()]()
+                self._br = (decomp_type.lower() == 'br')
             except KeyError:
                 raise Exception('Decompression type not supported: ' +
                                 decomp_type)
