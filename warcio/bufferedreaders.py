@@ -33,7 +33,9 @@ def try_brotli_init():
             return decomp
 
         BufferedReader.DECOMPRESSORS['br'] = brotli_decompressor
+        self._br = True
     except ImportError:  #pragma: no cover
+        self._br = False
         pass
 
 
@@ -116,7 +118,8 @@ class BufferedReader(object):
         # if raw data is not empty and decompressor set, but
         # decompressed buff is empty, keep reading --
         # decompressor likely needs more data to decompress
-        while data and self.decompressor and not self.decompressor.unused_data and self.empty():
+        #while data and self.decompressor and not self.decompressor.unused_data and self.empty():
+        while data and self.decompressor and not self._br and not self.decompressor.unused_data and self.empty():
             data = self.stream.read(block_size)
             self._process_read(data)
 
@@ -217,7 +220,8 @@ class BufferedReader(object):
         return False
 
     def read_next_member(self):
-        if not self.decompressor or not self.decompressor.unused_data:
+        #if not self.decompressor or not self.decompressor.unused_data:
+        if not self.decompressor or self._br or not self.decompressor.unused_data:
             return False
 
         self.starting_data = self.decompressor.unused_data
@@ -229,7 +233,8 @@ class BufferedReader(object):
         if self.buff:
             rem = self.buff_size - self.buff.tell()
 
-        if self.decompressor and self.decompressor.unused_data:
+        #if self.decompressor and self.decompressor.unused_data:
+        if self.decompressor and not self._br and self.decompressor.unused_data:
             rem += len(self.decompressor.unused_data)
         return rem
 
@@ -371,4 +376,3 @@ class ChunkedDataReader(BufferedReader):
 
 #=================================================================
 try_brotli_init()
-
