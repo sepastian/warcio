@@ -25,10 +25,12 @@ def deflate_decompressor_alt():
 def try_brotli_init():
     try:
         import brotli
-
+        class brotli.Decompressor():
+            def unused_data(self):
+                return None
         def brotli_decompressor():
             decomp = brotli.Decompressor()
-            brotli.Decompressor.unused_data = None
+            #brotli.Decompressor.unused_data = None
             return decomp
 
         BufferedReader.DECOMPRESSORS['br'] = brotli_decompressor
