@@ -27,7 +27,6 @@ def try_brotli_init():
         import brotli
         
         def brotli_decompressor():
-            setattr(brotli.Decompressor,'unused_data',property(lambda self: None))
             decomp = brotli.Decompressor()
             return decomp
 
