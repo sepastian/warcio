@@ -28,7 +28,7 @@ def try_brotli_init():
 
         def brotli_decompressor():
             decomp = brotli.Decompressor()
-            decomp.unused_data = None
+            #decomp.unused_data = None
             return decomp
 
         BufferedReader.DECOMPRESSORS['br'] = brotli_decompressor
